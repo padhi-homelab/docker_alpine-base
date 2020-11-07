@@ -48,16 +48,18 @@ if [ -z "${ENTRYPOINT_RUN_AS_ROOT:-}" ]; then
     USER=${USER:-user}
 
     log "Creating new user '${USER}' with UID = ${UID} in group ${GROUP} (${GID}) ..."
-    addgroup  --gid "${GID}" \
-              --system \
-              "${GROUP}"
+    addgroup --gid "${GID}" \
+             --system \
+             "${GROUP}" \
+      || log "Group already exists."
     adduser --disabled-password \
             --gecos "" \
             --home "/home/${USER}" \
             --ingroup "${GROUP}" \
             --uid "${UID}" \
-            "${USER}"
-    log "User '${USER}' created successfully."
+            "${USER}" \
+      && log "User '${USER}' created successfully." \
+      || log "User already exists."
 
     export HOME="/home/${USER}"
     set -- su-exec user "$@"
