@@ -10,6 +10,28 @@ else
     exec 3>/dev/null
 fi
 
+if [ -z "${ENTRYPOINT_RUN_AS_ROOT:-}" ]; then
+    export DOCKER_GID=${DOCKER_GID:-23456}
+    export DOCKER_UID=${DOCKER_UID:-12345}
+
+    export DOCKER_GROUP=${DOCKER_GROUP:-user}
+    export DOCKER_USER=${DOCKER_USER:-user}
+
+    log "Creating new user '${DOCKER_USER}' with UID = ${DOCKER_UID} in group ${DOCKER_GROUP} (${DOCKER_GID}) ..."
+    addgroup --gid "${DOCKER_GID}" \
+             --system \
+             "${DOCKER_GROUP}" \
+      || log "Group already exists."
+    adduser --disabled-password \
+            --gecos "" \
+            --home "/home/${DOCKER_USER}" \
+            --ingroup "${DOCKER_GROUP}" \
+            --uid "${DOCKER_UID}" \
+            "${DOCKER_USER}" \
+      && log "User '${DOCKER_USER}' created successfully." \
+      || log "User already exists."
+fi
+
 if [ -z "${ENTRYPOINT_SKIP_CONFIGS:-}" ]; then
     ENTRYPOINT_D="${ENTRYPOINT_D:-/etc/docker-entrypoint.d}"
 
@@ -41,26 +63,6 @@ if [ -z "${ENTRYPOINT_SKIP_CONFIGS:-}" ]; then
 fi
 
 if [ -z "${ENTRYPOINT_RUN_AS_ROOT:-}" ]; then
-    GID=${GID:-23456}
-    UID=${UID:-12345}
-
-    GROUP=${GROUP:-user}
-    USER=${USER:-user}
-
-    log "Creating new user '${USER}' with UID = ${UID} in group ${GROUP} (${GID}) ..."
-    addgroup --gid "${GID}" \
-             --system \
-             "${GROUP}" \
-      || log "Group already exists."
-    adduser --disabled-password \
-            --gecos "" \
-            --home "/home/${USER}" \
-            --ingroup "${GROUP}" \
-            --uid "${UID}" \
-            "${USER}" \
-      && log "User '${USER}' created successfully." \
-      || log "User already exists."
-
     export HOME="/home/${USER}"
     set -- su-exec user "$@"
 fi
