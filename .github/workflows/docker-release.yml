@@ -95,6 +95,7 @@ jobs:
           docker run --rm mplatform/mquery ${{ steps.prepare.outputs.image }}:${{ steps.prepare.outputs.version }}
       -
         name: "Docker Hub: Update description"
+        if: success() && github.event_name != 'pull_request'
         uses: peter-evans/dockerhub-description@v2
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
