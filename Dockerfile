@@ -8,7 +8,8 @@ COPY docker-entrypoint.sh \
 RUN apk add --no-cache --update \
         su-exec \
         tini \
- && rm -rf /var/lib/cache/* \
  && chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT [ "tini" , "/usr/local/bin/docker-entrypoint" ]
+
+CMD [ "sh" ]
