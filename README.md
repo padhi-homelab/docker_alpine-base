@@ -114,7 +114,7 @@ Please see "[Why you need an init system]" (by [@Yelp]) for an excellent in-dept
 
 #### Why not [dumb-init] or another init system? 
 
-The main reason is that [tini] supports [subreaping] of [Zombie processes], which [dumb-init] does not.
+The main reason is that tini supports [subreaping] of [Zombie processes], which dumb-init does not.
 For concrete examples on why this is an important issue, please see [Hongli Lai]'s excellent blog post:
 "[Docker and the PID 1 zombie reaping problem]".
 
@@ -133,7 +133,8 @@ There are several articles on why this is a major security issue. Please see:
 
 #### What about the existing [su]? And [gosu] or [sudo]?
 
-The main reason is that [su] is significantly smaller than [gosu].
+The main reason is that su-exec is significantly smaller than gosu,
+and doesn't inherit the quirks of su and sudo.
 
 For more details, please also see:
 - [gosu:Why?] and [gosu:Alternatives] README pages (by [@tianon])
