@@ -35,8 +35,8 @@ They may be set:
 #### Controlling entrypoint behavior:
 
   - `ENTRYPOINT_D` (default: `"/etc/docker-entrypoint.d"`): Location of configuration scripts
-  - `ENTRYPOINT_RUN_AS_ROOT` (default: `""`): Disables privilege lowering!
-  - `ENTRYPOINT_SKIP_CONFIG` (default: `""`): Disables running configuration scripts at `ENTRYPOINT_D`
+  - `ENTRYPOINT_RUN_AS_ROOT` (default: `""`): If non-empty, _disables privilege lowering!_
+  - `ENTRYPOINT_SKIP_CONFIG` (default: `""`): If non-empty, disables running configuration scripts
   - `ENTRYPOINT_LOG_THRESHOLD` (default: `1`): Set the minimum level for log messages to be displayed <br>
     Log levels: `1` (or lower) = debug, `2` = info, `3` = warning, `4` = error, `5` (or greater) = disable
 
