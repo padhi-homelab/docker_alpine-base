@@ -1,4 +1,4 @@
-name: Docker CI Release
+name: "Docker CI (Latest/Testing)"
 
 on:
   pull_request:
@@ -99,11 +99,6 @@ jobs:
           push: true
           tags: ${{ steps.prepare.outputs.tags }}
           build-args: ${{ steps.prepare.outputs.args }}
-      -
-        name: "Docker: Check manifest"
-        if: always() && github.event_name != 'pull_request'
-        run: |
-          docker run --rm mplatform/mquery ${{ steps.prepare.outputs.image }}:${{ steps.prepare.outputs.version }}
       -
         name: "Docker Hub: Update description"
         if: success() && github.event_name != 'pull_request'
