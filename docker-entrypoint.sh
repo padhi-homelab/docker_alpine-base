@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 
 export ENTRYPOINT_D="${ENTRYPOINT_D:-/etc/docker-entrypoint.d}"
 export ENTRYPOINT_LOG_THRESHOLD="${ENTRYPOINT_LOG_THRESHOLD:-1}"
