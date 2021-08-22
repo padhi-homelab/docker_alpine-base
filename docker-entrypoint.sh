@@ -56,7 +56,7 @@ if [ -z "$ENTRYPOINT_RUN_AS_ROOT" ]; then
 fi
 
 if [ -z "$ENTRYPOINT_SKIP_CONFIG" ]; then
-    if find "$ENTRYPOINT_D" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
+    if find "$ENTRYPOINT_D" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null | read v; then
         log 2 "$ENTRYPOINT_D is not empty, attempting to perform configuration."
 
         log 1 "Looking for shell scripts in $ENTRYPOINT_D ..."
