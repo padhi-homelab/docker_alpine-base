@@ -7,7 +7,7 @@ COPY docker-entrypoint.sh \
 
 RUN apk add --no-cache --update \
             'su-exec==0.2-r3' \
-            'tini==0.19.0-r2' \
+            'tini==0.19.0-r3' \
  && chmod +x /usr/local/bin/docker-entrypoint
 
 ENTRYPOINT [ "tini" , "/usr/local/bin/docker-entrypoint" ]
