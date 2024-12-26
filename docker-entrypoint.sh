@@ -9,46 +9,38 @@ ENTRYPOINT_LOG_LEVELS="DBUG INFO WARN ERRO"
 ENTRYPOINT_NAME="$(basename "$0")"
 
 log () {
-    if [ $1 -ge $ENTRYPOINT_LOG_THRESHOLD ]; then
-        LOG_LEVEL_NAME=$(echo $ENTRYPOINT_LOG_LEVELS | cut -d\  -f$1)
+    if [ "$1" -ge "$ENTRYPOINT_LOG_THRESHOLD" ]; then
+        LOG_LEVEL_NAME=$(echo "$ENTRYPOINT_LOG_LEVELS" | cut -d\  -f"$1")
         echo >&2 "$(date "+%Y-%m-%d %H:%M:%S") $ENTRYPOINT_NAME ($LOG_LEVEL_NAME) $2"
     fi
 }
 
 if [ -z "$ENTRYPOINT_RUN_AS_ROOT" ]; then
-    export DOCKER_GID=${DOCKER_GID:-23456}
-    export DOCKER_UID=${DOCKER_UID:-12345}
-    export DOCKER_GROUP=${DOCKER_GROUP:-user}
-    export DOCKER_USER=${DOCKER_USER:-user}
+    export DOCKER_GID="${DOCKER_GID:-23456}"
+    export DOCKER_UID="${DOCKER_UID:-12345}"
+    export DOCKER_GROUP="${DOCKER_GROUP:-user}"
+    export DOCKER_USER="${DOCKER_USER:-user}"
 
     log 2 "Creating new group '$DOCKER_GROUP' with GID = $DOCKER_GID ..."
-    addgroup --gid "$DOCKER_GID" \
-             --system \
-             "$DOCKER_GROUP"
-    if [ $? -eq 0 ]; then
+    if addgroup --gid "$DOCKER_GID" --system "$DOCKER_GROUP"; then
         log 1 "  + Group created successfully."
     else
-        EXISTING_GID=$(id -g $DOCKER_GROUP)
+        EXISTING_GID=$(id -g "$DOCKER_GROUP")
         log 3 "  * Group already exists! Existing GID = $EXISTING_GID."
-        if [ $EXISTING_GID -ne $DOCKER_GID ]; then
+        if [ "$EXISTING_GID" -ne "$DOCKER_GID" ]; then
             log 4 "  \`- Aborting due to GID mismatch."
             exit 1
         fi
     fi
 
     log 2 "Creating new user '$DOCKER_USER' with UID = $DOCKER_UID in group '$DOCKER_GROUP' ..."
-    adduser --disabled-password \
-            --gecos "" \
-            --home "/home/$DOCKER_USER" \
-            --ingroup "$DOCKER_GROUP" \
-            --uid "$DOCKER_UID" \
-            "$DOCKER_USER"
-    if [ $? -eq 0 ]; then
+    if adduser --disabled-password --gecos "" --ingroup "$DOCKER_GROUP" \
+               --home "/home/$DOCKER_USER" --uid "$DOCKER_UID" "$DOCKER_USER"; then
         log 1 "  + User created successfully."
     else
-        EXISTING_UID=$(id -u $DOCKER_USER)
-        log 3 "  * User already exists! Existing UID = $(id -u $DOCKER_USER)."
-        if [ $EXISTING_UID -ne $DOCKER_UID ]; then
+        EXISTING_UID=$(id -u "$DOCKER_USER")
+        log 3 "  * User already exists! Existing UID = $(id -u "$DOCKER_USER")."
+        if [ "$EXISTING_UID" -ne "$DOCKER_UID" ]; then
             log 4 "  \`- Aborting due to UID mismatch."
             exit 1
         fi
@@ -56,7 +48,7 @@ if [ -z "$ENTRYPOINT_RUN_AS_ROOT" ]; then
 fi
 
 if [ -z "$ENTRYPOINT_SKIP_CONFIG" ]; then
-    if find "$ENTRYPOINT_D" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null | read v; then
+    if find "$ENTRYPOINT_D" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null | read -r _; then
         log 2 "$ENTRYPOINT_D is not empty, attempting to perform configuration."
 
         log 1 "Looking for shell scripts in $ENTRYPOINT_D ..."
@@ -82,10 +74,12 @@ if [ -z "$ENTRYPOINT_SKIP_CONFIG" ]; then
     fi
 fi
 
+STARTUP_USER="root"
 if [ -z "$ENTRYPOINT_RUN_AS_ROOT" ]; then
-    export HOME="/home/$USER"
-    set -- su-exec user "$@"
+    STARTUP_USER="$DOCKER_USER"
+    export HOME="/home/$DOCKER_USER"
+    set -- su-exec "$DOCKER_USER" "$@"
 fi
 
-log 2 "Ready for start up!"
+log 2 "Starting up as '$STARTUP_USER'!"
 exec "$@"
