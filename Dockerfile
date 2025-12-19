@@ -1,4 +1,4 @@
-FROM alpine:3.23.0
+FROM alpine:3.23.2
 
 LABEL maintainer="Saswat Padhi saswat.sourav@gmail.com"
 
